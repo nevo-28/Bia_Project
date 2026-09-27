@@ -1,0 +1,2317 @@
+# Product Requirements Document (PRD)
+## Project: Bia— Pan-African Payment Interoperability & Settlement Infrastructure
+
+**Document Version:** 2.0  
+**Status:** For Engineering Review & Implementation  
+**Classification:** Confidential — Internal Engineering & Product  
+**Last Updated:** September 25, 2026
+
+
+## Table of Contents
+
+1. Executive Summary
+2. Vision & Strategic Context
+3. Problem Statement & Market Opportunity
+4. Target Users & Personas
+5. System Architecture Overview
+6. Module 1: Unified Payment API Gateway
+7. Module 2: Provider Adapter Layer (Connectors)
+8. Module 3: AI Intent & Routing Engine
+9. Module 4: Deterministic Policy & Compliance Engine
+10. Module 5: Ledger & Reconciliation Service
+11. Module 6: Stablecoin Settlement & Treasury Service
+12. Module 7: Fraud Detection & AML Operations
+13. Module 8: UI Layer (All Surfaces)
+14. Module 9: MCP Server for AI Agents
+15. Module 10: Developer Experience & SDKs
+16. Data Architecture & Database Design
+17. Security Architecture
+18. Infrastructure & DevOps
+19. Regulatory & Licensing Strategy
+20. Non-Functional Requirements
+21. Operational Runbook
+22. Roadmap & Milestones
+23. Team Structure & Roles
+24. KPIs & Success Metrics
+25. Appendices
+
+
+## 1. Executive Summary
+
+Bia is a pan-African payment interoperability and settlement infrastructure designed to solve the fragmentation, cost, and unreliability of cross-border payments across the African continent. Africa's cross-border payments market was worth **$329 billion in 2025** and is projected to reach **$1 trillion by 2035** . Yet Sub-Saharan Africa remains the world's most expensive remittance region, with the average cost of sending $200 hovering between **7% and 9%** — more than double the global target of 3% .
+
+Bia is not a consumer app. It is an **API-first infrastructure layer** that:
+
+- Abstracts 50+ African payment providers (mobile money, bank rails, cards) behind a single unified API.
+- Uses an **AI-powered routing engine** to select the optimal payment rail in real time based on cost, speed, liquidity, and compliance requirements.
+- Uses **regulated stablecoins** (USDC, USDT) as the cross-border settlement backbone to enable near-instant, 24/7 transfers.
+- Provides a **deterministic policy engine** that validates every transaction before execution, ensuring AI never directly authorizes fund movement.
+- Includes **full UI surfaces** for merchants, developers, operations teams, and partners.
+- Exposes an **MCP (Model Context Protocol) server** that allows AI agents to initiate payments via natural language.
+
+The target market is B2B2C: pan-African SMEs, global freelance platforms, fintechs, and neobanks that need reliable cross-border payment infrastructure without building it themselves.
+
+
+## 2. Vision & Strategic Context
+
+### 2.1 The Core Insight
+
+Africa's payment ecosystem is not lacking in rails. It is lacking in **interoperability**. There are over **860 million mobile money accounts** globally, with Africa accounting for over 70% of transaction value. M-PESA, MTN MoMo, Airtel Money, Orange Money, and dozens of other wallets process billions of transactions annually. Yet these systems largely cannot talk to each other or connect to global commerce.
+
+The winning approach is not to build another wallet. It is to build the **switching and settlement layer** that connects existing rails to each other and to the global economy.
+
+### 2.2 Strategic Position
+
+Bia occupies the space between:
+- **Mobile money operators** (M-PESA, MTN MoMo, Airtel Money) — who dominate local payments but have limited cross-border capability.
+- **Global payment platforms** (PayPal, Stripe, Wise) — who have global reach but struggle with African regulatory fragmentation and mobile-money-native users.
+- **Pan-African processors** (Flutterwave, Paystack, PawaPay) — who excel at merchant acquiring but have not fully cracked seamless interoperability between local wallets and stablecoin settlement.
+
+The strategic moat is the **compliance orchestration layer** — the automated routing of KYC/AML rules across 54 regulatory jurisdictions — which is the hardest component to build and the most defensible.
+
+
+## 3. Problem Statement & Market Opportunity
+
+### 3.1 Core Problems
+
+| Problem | Impact |
+|---|---|
+| **Fragmented rails** | Integrating with M-PESA (SOAP), Paystack (REST), MTN MoMo, and others requires weeks of work per provider  |
+| **High costs** | Sending $200 across Africa costs 7–9%, vs. global target of 3%  |
+| **Slow settlement** | Cross-border payments take days due to correspondent banking |
+| **Regulatory complexity** | 54 countries, each with its own licensing, KYC/AML rules, and FX controls |
+| **Exclusion from global commerce** | Freelancers and SMEs cannot easily receive payments from global clients |
+
+### 3.2 Market Sizing
+
+| Metric | Value | Source |
+|---|---|---|
+| Africa cross-border payments market (2025) | $329 billion |  |
+| Projected market size (2035) | $1 trillion |  |
+| Remittance inflows to Africa (2025) | $104 billion |  |
+| Mobile money accounts globally | 860+ million | Industry data |
+| Average cost to send $200 in Africa | 7–9% |  |
+| Stablecoins as % of Sub-Saharan Africa crypto volume | 43% |  |
+
+### 3.3 Competitive Landscape
+
+| Category | Examples | Strength | Weakness |
+|---|---|---|---|
+| Mobile money giants | M-PESA, MTN MoMo, Airtel Money | Dominant local wallets | Limited cross-border |
+| Pan-African processors | Flutterwave ($3.2B), Paystack (Stripe) | Merchant acquiring | Not consumer wallets |
+| Cross-border remittance | Chipper Cash, LemFi, NALA | Send-money corridors | Similar products, price competition |
+| Global fintechs | Wise, Revolut, Payoneer | Multi-currency accounts | Not mobile-money-native |
+| Stablecoin-native | Hurupay, Daya | Dollar accounts | Niche focus |
+
+**Bia's differentiation:** AI-native routing, deterministic compliance orchestration, stablecoin settlement, and full UI surfaces in one integrated platform.
+
+
+## 4. Target Users & Personas
+
+### 4.1 Primary Users (B2B2C)
+
+**Persona 1: Pan-African SME Merchant**
+- **Profile:** A Lagos-based e-commerce business selling to customers in Ghana, Kenya, and Nigeria.
+- **Pain:** Cannot accept payments from customers using different mobile money wallets. Each integration takes weeks.
+- **Need:** A single API to accept payments from any African payment method.
+
+**Persona 2: Global Freelance Platform**
+- **Profile:** A US-based platform paying 50,000 African freelancers monthly.
+- **Pain:** PayPal freezes accounts. Bank transfers take 5–7 days and cost $15–30 per transfer.
+- **Need:** A payout API that sends funds to mobile money wallets in minutes.
+
+**Persona 3: African Fintech / Neobank**
+- **Profile:** A Kenyan neobank with 200,000 users that wants to offer cross-border payments.
+- **Pain:** Building and maintaining integrations with 10+ payment providers is expensive and time-consuming.
+- **Need:** A single integration that gives access to all African payment rails.
+
+### 4.2 Secondary Users (End Consumers)
+
+- African freelancers receiving payments from global clients.
+- Individuals sending money to family across African borders.
+- Creators monetizing content globally and withdrawing to local wallets.
+
+### 4.3 Internal Users
+
+- **Operations Team:** Monitors transactions, resolves stuck payments, manages liquidity.
+- **Compliance Team:** Reviews flagged transactions, files SARs, handles regulatory inquiries.
+- **Treasury Team:** Manages stablecoin reserves, FX positions, and corridor liquidity.
+- **Developer Support:** Assists B2B clients with integration issues.
+
+
+## 5. System Architecture Overview
+
+### 5.1 High-Level Architecture
+
+Bia is a **cloud-native, microservices-based, event-driven architecture** designed for high availability (99.95% uptime), horizontal scalability, and regulatory compliance. The system is divided into **10 core modules**, each independently deployable and horizontally scalable.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            CLIENT LAYER                                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Merchant     │  │ Developer    │  │ Admin/Ops    │  │ MCP Clients  │     │
+│  │ Dashboard    │  │ Portal       │  │ Console      │  │ (AI Agents)  │     │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘     │
+└─────────┼─────────────────┼─────────────────┼─────────────────┼─────────────┘
+          │                 │                 │                 │
+          ▼                 ▼                 ▼                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         API GATEWAY (Kong / AWS API Gateway)                 │
+│  • Authentication (OAuth 2.0, API Keys)  • Rate Limiting  • Request Routing │
+│  • Idempotency  • Request/Response Logging  • CORS  • IP Whitelisting       │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│  Orchestration   │   │   MCP Server     │   │  Webhook         │
+│  Service         │   │   (AI Agents)    │   │  Dispatcher      │
+└────────┬─────────┘   └────────┬─────────┘   └────────┬─────────┘
+         │                      │                      │
+         ▼                      ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         AI INTENT LAYER (Nemotron / LLM)                     │
+│  • Natural language parsing  • Entity extraction  • Intent classification    │
+│  • Output: Structured PaymentIntent JSON (NO AUTHORIZATION)                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     DETERMINISTIC POLICY ENGINE (No LLM)                     │
+│  • Amount limits  • Velocity checks  • KYC tier validation  • Sanctions    │
+│  • Corridor availability  • Intent verification  • FAIL CLOSED              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│  AI ROUTING      │   │  FRAUD & AML     │   │  COMPLIANCE      │
+│  RECOMMENDER     │   │  SERVICE         │   │  ORCHESTRATOR    │
+│  (advisory only) │   │                  │   │                  │
+└────────┬─────────┘   └────────┬─────────┘   └────────┬─────────┘
+         │                      │                      │
+         ▼                      ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PAYMENT EXECUTION LAYER                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │ M-PESA      │ │ MTN MoMo    │ │ PawaPay     │ │ Stablecoin  │          │
+│  │ Adapter     │ │ Adapter     │ │ Adapter     │ │ Settlement  │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘          │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │ Bank        │ │ Paystack    │ │ Flutterwave │ │ Card        │          │
+│  │ Adapter     │ │ Adapter     │ │ Adapter     │ │ Adapter     │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         DATA LAYER                                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │ PostgreSQL  │ │ Redis       │ │ Kafka       │ │ ClickHouse  │          │
+│  │ (Ledger,    │ │ (Cache,     │ │ (Event      │ │ (Analytics, │          │
+│  │  Users,     │ │  Sessions,  │ │  Streaming) │ │  Reporting) │          │
+│  │  Config)    │ │  Rate Limit)│ │             │ │             │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘          │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                         │
+│  │ S3 / GCS    │ │ HashiCorp   │ │ Temporal    │                         │
+│  │ (Documents, │ │ Vault       │ │ (Workflow   │                         │
+│  │  Backups)   │ │ (Secrets)   │ │  Engine)    │                         │
+│  └─────────────┘ └─────────────┘ └─────────────┘                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 5.2 Technology Stack
+
+| Layer | Technology | Justification |
+|---|---|---|
+| **API Gateway** | Kong or AWS API Gateway | Rate limiting, auth, routing |
+| **Backend Services** | Go (primary), Python (AI/ML), TypeScript (Node.js for BFF) | Performance, AI ecosystem, frontend integration |
+| **AI/ML** | NVIDIA Nemotron via Brev, LangChain, MCP SDK | Agentic workflows, natural language processing |
+| **Primary Database** | PostgreSQL 16 (with Citus for sharding) | ACID compliance for ledger, relational data |
+| **Cache** | Redis 7 (Cluster mode) | Session management, rate limiting, hot data |
+| **Event Streaming** | Apache Kafka | Event-driven architecture, audit trail |
+| **Analytics** | ClickHouse | Real-time analytics, reporting |
+| **Workflow Engine** | Temporal | Durable execution for payment workflows |
+| **Secrets Management** | HashiCorp Vault | API keys, credentials, encryption keys |
+| **Object Storage** | S3 / GCS | KYC documents, invoices, backups |
+| **Container Orchestration** | Kubernetes (EKS / GKE) | Scalability, service discovery |
+| **CI/CD** | GitHub Actions + ArgoCD | Automated testing, deployment |
+| **Monitoring** | Prometheus + Grafana + Datadog | Metrics, alerting, tracing |
+| **Frontend** | React 18 + TypeScript + Tailwind CSS | Modern, accessible UI |
+
+### 5.3 Communication Patterns
+
+- **Synchronous:** REST/JSON over HTTPS for client-facing APIs. gRPC for inter-service communication.
+- **Asynchronous:** Kafka for event streaming, webhooks for client notifications.
+- **Event Sourcing:** All state changes emit domain events to Kafka. Ledger is event-sourced.
+- **Idempotency:** All API endpoints accept an `Idempotency-Key` header. Duplicate requests return the original result.
+
+
+## 6. Module 1: Unified Payment API Gateway
+
+### 6.1 Purpose
+
+The API Gateway is the single entry point for all client requests. It handles authentication, rate limiting, request validation, and routing to the appropriate backend service.
+
+### 6.2 Endpoints
+
+#### 6.2.1 Collections (Accept Payments)
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/v1/payments/collect` | POST | Initiate a payment collection from a customer |
+| `/v1/payments/collect/{id}` | GET | Retrieve payment status |
+| `/v1/payments/collect/{id}/refund` | POST | Initiate a refund |
+
+**Request Body (POST /v1/payments/collect):**
+```json
+{
+  "amount": 5000,
+  "currency": "KES",
+  "paymentMethod": {
+    "type": "mobile_money",
+    "provider": "mpesa",
+    "phoneNumber": "+254712345678"
+  },
+  "reference": "INV-2026-001",
+  "description": "Payment for order #12345",
+  "callbackUrl": "https://merchant.com/webhooks/payment",
+  "metadata": {
+    "customerId": "cust_abc123",
+    "orderId": "ord_xyz789"
+  }
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "pay_abc123def456",
+  "status": "pending",
+  "amount": 5000,
+  "currency": "KES",
+  "fee": 75,
+  "netAmount": 4925,
+  "paymentMethod": {
+    "type": "mobile_money",
+    "provider": "mpesa",
+    "phoneNumber": "+254712345678"
+  },
+  "reference": "INV-2026-001",
+  "createdAt": "2026-09-25T10:30:00Z",
+  "expiresAt": "2026-09-25T10:45:00Z",
+  "instructions": {
+    "type": "stk_push",
+    "message": "Enter your M-PESA PIN on your phone to complete payment"
+  }
+}
+```
+
+#### 6.2.2 Disbursements (Send Payments)
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/v1/payments/disburse` | POST | Send funds to a recipient |
+| `/v1/payments/disburse/{id}` | GET | Retrieve disbursement status |
+| `/v1/payments/disburse/batch` | POST | Batch disbursements |
+
+#### 6.2.3 Accounts & Balances
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/v1/accounts/balance` | GET | Get wallet balance |
+| `/v1/accounts/transactions` | GET | List transactions |
+| `/v1/accounts/statement` | GET | Generate statement |
+
+#### 6.2.4 Webhooks
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/v1/webhooks` | POST | Register webhook |
+| `/v1/webhooks/{id}` | DELETE | Delete webhook |
+| `/v1/webhooks/{id}/test` | POST | Test webhook delivery |
+
+**Webhook Payload:**
+```json
+{
+  "event": "payment.completed",
+  "id": "evt_abc123",
+  "createdAt": "2026-09-25T10:32:00Z",
+  "data": {
+    "paymentId": "pay_abc123def456",
+    "status": "completed",
+    "amount": 5000,
+    "currency": "KES",
+    "fee": 75,
+    "netAmount": 4925,
+    "reference": "INV-2026-001",
+    "settledAt": "2026-09-25T10:32:00Z",
+    "receipt": {
+      "type": "mpesa_receipt",
+      "receiptNumber": "QWE1234567"
+    }
+  }
+}
+```
+
+### 6.3 Authentication
+
+- **OAuth 2.0:** Client credentials flow for server-to-server.
+- **API Keys:** For simple integrations. Prefix: `ap_`.
+- **JWT:** For dashboard sessions. RS256 signed, 15-minute expiry.
+- **HMAC:** Webhook signature verification using SHA-256.
+
+### 6.4 Rate Limiting
+
+| Tier | Requests/minute | Burst |
+|---|---|---|
+| Free | 60 | 100 |
+| Growth | 600 | 1,000 |
+| Scale | 6,000 | 10,000 |
+| Enterprise | Custom | Custom |
+
+Rate limit headers returned: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`. On exceeding: HTTP 429 with `Retry-After` header.
+
+### 6.5 Idempotency
+
+All POST/PUT endpoints require an `Idempotency-Key` header. Keys are valid for 24 hours. Duplicate requests within the window return the original response with a `Idempotent-Replay: true` header.
+
+### 6.6 Error Handling
+
+| HTTP Code | Error Code | Description |
+|---|---|---|
+| 400 | `invalid_request` | Malformed request |
+| 401 | `unauthorized` | Invalid API key |
+| 403 | `forbidden` | Insufficient permissions |
+| 404 | `not_found` | Resource not found |
+| 409 | `conflict` | Duplicate idempotency key with different payload |
+| 422 | `validation_error` | Business logic validation failed |
+| 429 | `rate_limit_exceeded` | Too many requests |
+| 500 | `internal_error` | Server error |
+| 503 | `service_unavailable` | Temporary outage |
+
+**Error Response Format:**
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Amount exceeds maximum for this payment method",
+    "details": [
+      {
+        "field": "amount",
+        "issue": "exceeds_max",
+        "max": 250000
+      }
+    ],
+    "requestId": "req_abc123"
+  }
+}
+```
+
+
+## 7. Module 2: Provider Adapter Layer (Connectors)
+
+### 7.1 Purpose
+
+Each payment provider has its own API, authentication method, data format, and quirks. The Provider Adapter Layer isolates this complexity into independent microservices, each specialized for one provider. This allows the core system to treat all providers uniformly.
+
+### 7.2 Supported Providers (Phase 1)
+
+| Provider | Type | Countries | API Style | Auth |
+|---|---|---|---|---|
+| M-PESA (Daraja) | Mobile Money | Kenya, Tanzania, DRC, Ghana | REST + SOAP | OAuth 2.0 + API Key  |
+| MTN MoMo | Mobile Money | 15+ countries | REST | OAuth 2.0 + Subscription Key  |
+| Airtel Money | Mobile Money | 14 countries | REST | OAuth 2.0 |
+| PawaPay | Aggregator | 20 countries | REST | API Key  |
+| Paystack | Card + Bank | Nigeria, Ghana, SA, Kenya | REST | Bearer Token |
+| Flutterwave | Card + Bank + Mobile Money | 30+ countries | REST | OAuth 2.0 |
+| Bank Transfer (NIBSS, NIP) | Bank Rail | Nigeria | REST | OAuth 2.0 |
+| Stablecoin (USDC/USDT) | Blockchain | Global | JSON-RPC | Wallet Signature |
+
+### 7.3 Adapter Interface
+
+Every adapter must implement the following interface:
+
+```typescript
+interface PaymentAdapter {
+  // Provider metadata
+  getProviderInfo(): ProviderInfo;
+
+  // Collections (accept payments)
+  initiateCollection(request: CollectionRequest): Promise<CollectionResponse>;
+  getCollectionStatus(providerRef: string): Promise<CollectionStatus>;
+  refundCollection(providerRef: string, amount?: number): Promise<RefundResponse>;
+
+  // Disbursements (send payments)
+  initiateDisbursement(request: DisbursementRequest): Promise<DisbursementResponse>;
+  getDisbursementStatus(providerRef: string): Promise<DisbursementStatus>;
+
+  // Health check
+  checkHealth(): Promise<HealthStatus>;
+
+  // Webhook parsing
+  parseWebhook(payload: unknown, headers: Record<string, string>): WebhookEvent;
+}
+```
+
+### 7.4 Adapter Details
+
+#### 7.4.1 M-PESA Daraja Adapter
+
+**Authentication:**
+- OAuth 2.0 bearer token (expires every hour).
+- Consumer Key + Consumer Secret from Safaricom Developer Portal .
+- Passkey for STK Push.
+
+**Key Operations:**
+- **STK Push (Lipa Na M-PESA Online):** Initiates a payment prompt on the customer's phone.
+- **C2B (Customer to Business):** Registers validation and confirmation URLs.
+- **B2C (Business to Customer):** Sends money to a customer's M-PESA wallet.
+- **Transaction Status:** Queries the status of a transaction.
+- **Reversal:** Reverses a completed transaction.
+
+**Endpoint:** `https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest`
+
+**Callback Handling:** M-PESA sends callbacks to a publicly reachable HTTPS URL. The adapter must validate the callback signature and update the transaction status.
+
+**Rate Limits:** 100 requests/minute (production).
+
+#### 7.4.2 MTN MoMo Adapter
+
+**Authentication:**
+- OAuth 2.0 with Subscription Key.
+- API User + API Key creation via `POST /v1_0/apiuser`.
+
+**Key Operations:**
+- **Request to Pay:** Initiates a payment request.
+- **Transfer:** Sends money to a user.
+- **Account Balance:** Queries account balance.
+- **User Info:** Retrieves user KYC information.
+
+**Endpoint:** `https://proxy.momoapi.mtn.com` (production) 
+
+**Sandbox:** `https://sandbox.momodeveloper.mtn.com` 
+
+#### 7.4.3 PawaPay Adapter
+
+PawaPay provides a single API to connect to nearly 50 mobile money operators across 20 African countries .
+
+**Key Operations:**
+- **Deposits:** Collect payments from mobile money wallets.
+- **Payouts:** Send funds to mobile money wallets.
+- **Refunds:** Reverse a deposit.
+- **Payment Pages:** Hosted checkout pages.
+
+**Endpoint:** `https://api.pawapay.io/v2`
+
+**Webhook:** PawaPay sends webhook callbacks for deposit and payout status changes.
+
+#### 7.4.4 Stablecoin Settlement Adapter
+
+**Networks:** Ethereum (USDC, USDT), Polygon (USDC), Solana (USDC), Aptos (USDC).
+
+**Operations:**
+- **Generate Deposit Address:** Create a unique address for a user.
+- **Initiate Transfer:** Send stablecoins to an external address.
+- **Check Balance:** Query on-chain balance.
+- **Monitor Incoming Transactions:** Watch for incoming transfers.
+
+**Key Management:** Uses HashiCorp Vault for private key storage. Multi-signature wallets for treasury operations. Hardware Security Modules (HSMs) for signing.
+
+**Compliance:** Every stablecoin transaction is screened against sanctions lists and KYT (Know Your Transaction) providers before execution.
+
+### 7.5 Fallback & Circuit Breaker
+
+Each adapter implements a circuit breaker pattern. If a provider's API failure rate exceeds 10% over a 5-minute window, the circuit breaker opens and the adapter is marked as `unavailable`. The AI Routing Engine will route transactions to alternative providers until the circuit closes.
+
+**Health Check:** Every adapter exposes a `/health` endpoint that checks:
+- API connectivity.
+- Authentication token validity.
+- Recent transaction success rate.
+- Response latency.
+
+### 7.6 Provider Certification
+
+Each adapter must pass a certification suite before going to production:
+
+| Test | Description |
+|---|---|
+| **Happy Path** | Successful collection and disbursement |
+| **Failure Handling** | Provider returns error; system handles gracefully |
+| **Timeout** | Provider does not respond; system times out and retries |
+| **Webhook Parsing** | Correct parsing of all webhook event types |
+| **Idempotency** | Duplicate requests do not result in double charges |
+| **Rate Limiting** | System respects provider rate limits |
+| **Currency Handling** | Correct handling of different currencies |
+| **Reversal** | Successful reversal of a completed transaction |
+
+
+## 8. Module 3: AI Intent & Routing Engine
+
+### 8.1 Purpose
+
+The AI Intent & Routing Engine is the **intelligence layer** of AetherPay. It performs two functions:
+
+1. **Intent Extraction:** Parse natural language requests into structured payment intents.
+2. **Routing Recommendation:** Recommend the optimal payment rail based on real-time constraints.
+
+**Critical Design Principle:** The AI **never** authorizes a payment. It extracts intent and recommends a route. All authorization decisions are made by the Deterministic Policy Engine (Module 4).
+
+### 8.2 Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     USER INPUT (Natural Language)                    │
+│  "Send $500 to my sister in Ghana via MTN MoMo. Her number is       │
+│   +233241234567. I have verified KYC."                              │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     AI INTENT EXTRACTION (LLM)                       │
+│  Model: NVIDIA Nemotron (or fine-tuned Llama 3)                     │
+│  Prompt: "Extract structured payment intent from the following      │
+│           text. Return JSON with fields: intent, amount, currency,  │
+│           recipient_network, recipient_country, recipient_id,       │
+│           sender_kyc_tier. Do NOT make any authorization            │
+│           decisions."                                                │
+│                                                                      │
+│  Output: {                                                           │
+│    "intent": "disbursement",                                         │
+│    "amount": 500,                                                    │
+│    "currency": "USD",                                                │
+│    "recipient_network": "MTN MoMo",                                  │
+│    "recipient_country": "Ghana",                                     │
+│    "recipient_identifier": "+233241234567",                          │
+│    "sender_kyc_tier": "verified"                                     │
+│  }                                                                   │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              INTENT VERIFICATION (Second LLM Call)                   │
+│  Model: Same LLM, different prompt                                   │
+│  Prompt: "The following JSON was extracted from the user's message.  │
+│           Original message: [message]. Extracted intent: [JSON].     │
+│           Does the extracted intent accurately match the original    │
+│           message? Return YES or NO, and explain any discrepancies." │
+│                                                                      │
+│  This is the "two-call architecture": one call extracts, a second    │
+│  call verifies. Deterministic code sits between the two calls.       │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              DETERMINISTIC POLICY ENGINE (Module 4)                  │
+│  • Validates all fields against policy rules                         │
+│  • Checks amount limits, velocity, KYC tier, sanctions               │
+│  • Returns APPROVE, REJECT, or ESCALATE                              │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              AI ROUTING RECOMMENDER (Advisory Only)                  │
+│  Input: Validated PaymentIntent + real-time rail data                │
+│  Data sources: Provider health, fee schedules, FX rates, liquidity   │
+│                                                                      │
+│  Model: NVIDIA Nemotron with tool use                                │
+│  Tools: get_rail_fee(rail, corridor), get_rail_speed(rail),          │
+│         get_rail_liquidity(rail, currency), get_rail_health(rail)    │
+│                                                                      │
+│  Output: Recommended rail + reasoning                                │
+│  "Recommended rail: Stablecoin off-ramp via USDC.                    │
+│   Reason: 1.4% fee vs 2.1% for M-PESA direct. 8 min settlement       │
+│   vs 15 min. Sufficient USDC liquidity in treasury."                 │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              DETERMINISTIC ROUTE VALIDATION                          │
+│  • Verify recommended rail is available                              │
+│  • Verify recommended rail supports the corridor and currency        │
+│  • Verify treasury has sufficient liquidity                          │
+│  • If validation fails, fall back to default rail                    │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              PAYMENT EXECUTION                                       │
+│  Execute via the selected Provider Adapter.                          │
+│  Log the AI's reasoning, the deterministic validation result, and    │
+│  the final execution decision for audit.                             │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 8.3 Prompt Engineering
+
+**Intent Extraction Prompt (System):**
+```
+You are a payment intent extraction system for AetherPay, a pan-African payment platform. Your ONLY job is to extract structured payment intent from user input.
+
+RULES:
+1. Extract the following fields: intent (collection/disbursement/balance/status), amount, currency, recipient_network (M-PESA/MTN MoMo/Airtel Money/bank/stablecoin), recipient_country, recipient_identifier, sender_kyc_tier.
+2. If any field is missing, set it to null and list it in "missing_fields".
+3. Do NOT make any authorization decisions. Do NOT assume the payment is approved.
+4. Do NOT invent amounts or recipients. If the user says "send some money", return an error asking for clarification.
+5. Output ONLY valid JSON. No explanations, no markdown.
+
+EXAMPLE:
+User: "Send $500 to my sister in Ghana via MTN MoMo. Her number is +233241234567."
+Output: {"intent": "disbursement", "amount": 500, "currency": "USD", "recipient_network": "MTN MoMo", "recipient_country": "Ghana", "recipient_identifier": "+233241234567", "sender_kyc_tier": null, "missing_fields": ["sender_kyc_tier"]}
+```
+
+**Intent Verification Prompt (System):**
+```
+You are a verification system for AetherPay. You will receive:
+1. The original user message.
+2. A JSON object representing the extracted payment intent.
+
+Your job is to verify that the extracted intent ACCURATELY represents the user's request.
+
+Check:
+- Is the amount correct?
+- Is the recipient correct?
+- Is the payment method correct?
+- Are there any ambiguities?
+
+Return:
+{
+  "verified": true/false,
+  "confidence": 0.0-1.0,
+  "discrepancies": ["list of discrepancies"],
+  "recommendation": "proceed" or "ask_user_for_clarification"
+}
+
+Be conservative. If there is ANY doubt, recommend asking the user for clarification.
+```
+
+### 8.4 Model Deployment
+
+- **Model:** NVIDIA Nemotron-4 340B (or Nemotron-3 70B for lower latency).
+- **Inference:** NVIDIA Brev GPU instances (H100 or A100).
+- **Latency Target:** < 500ms for intent extraction, < 300ms for verification.
+- **Fallback:** If NVIDIA API is unavailable, fall back to a fine-tuned Llama 3 70B running on local GPUs.
+- **Caching:** Common intents (e.g., "check balance") are cached to reduce latency.
+
+### 8.5 Routing Recommendation
+
+The routing recommender uses tool use to query real-time data:
+
+**Tools Available to the AI:**
+```typescript
+interface RoutingTools {
+  get_rail_fee(rail: string, corridor: string, amount: number): Promise<FeeInfo>;
+  get_rail_speed(rail: string, corridor: string): Promise<SpeedInfo>;
+  get_rail_liquidity(rail: string, currency: string): Promise<LiquidityInfo>;
+  get_rail_health(rail: string): Promise<HealthInfo>;
+  get_fx_rate(from: string, to: string): Promise<FXRate>;
+  get_compliance_requirements(rail: string, corridor: string): Promise<ComplianceInfo>;
+}
+```
+
+**Routing Decision Criteria:**
+
+| Criterion | Weight | Description |
+|---|---|---|
+| **Cost** | 35% | Total fee (provider fee + FX spread + platform fee) |
+| **Speed** | 30% | Expected settlement time |
+| **Reliability** | 20% | Recent success rate for this rail |
+| **Liquidity** | 10% | Available liquidity in treasury for destination currency |
+| **Compliance** | 5% | Regulatory requirements for this corridor |
+
+### 8.6 Audit Trail
+
+Every AI decision must be logged with:
+- `transaction_id`: Unique transaction identifier.
+- `user_input`: Original natural language input.
+- `extracted_intent`: JSON output from intent extraction.
+- `verification_result`: Output from verification LLM.
+- `deterministic_validation`: Result from Policy Engine.
+- `routing_recommendation`: AI's recommended rail + reasoning.
+- `route_validation`: Deterministic validation of the recommendation.
+- `final_route`: The rail actually used.
+- `model_versions`: Versions of all models used.
+- `timestamp`: ISO 8601 timestamp.
+
+This audit trail is immutable (append-only) and is required for regulatory review and dispute resolution.
+
+
+## 9. Module 4: Deterministic Policy & Compliance Engine
+
+### 9.1 Purpose
+
+The Deterministic Policy Engine is the **safety gate** between AI intent and payment execution. It is implemented in pure, deterministic code (no LLM, no probabilistic inference). It validates every payment intent against a configurable set of rules before the transaction is allowed to proceed.
+
+**Core Principle:** The Policy Engine **fails closed**. If there is any doubt, the transaction is rejected or escalated for human review. The IMF explicitly recommends this architecture: a "deterministic control safety gate between intent formation and execution" .
+
+### 9.2 Policy Rules
+
+#### 9.2.1 Amount Limits
+
+| Rule | Description | Action |
+|---|---|---|
+| `max_transaction_amount` | Maximum single transaction amount per corridor | Reject if exceeded |
+| `daily_limit` | Maximum total daily amount per user | Reject if exceeded |
+| `monthly_limit` | Maximum total monthly amount per user | Reject if exceeded |
+| `velocity_check` | Maximum transactions per hour/day | Reject if exceeded |
+
+#### 9.2.2 KYC Tier Validation
+
+| KYC Tier | Max Transaction | Max Daily | Max Monthly |
+|---|---|---|---|
+| Tier 0 (Unverified) | $0 | $0 | $0 |
+| Tier 1 (Basic) | $500 | $1,000 | $5,000 |
+| Tier 2 (Verified) | $5,000 | $10,000 | $50,000 |
+| Tier 3 (Enhanced) | $50,000 | $100,000 | $500,000 |
+
+#### 9.2.3 Sanctions & Watchlist Screening
+
+Every transaction is screened against:
+- OFAC SDN List
+- UN Consolidated Sanctions List
+- EU Sanctions List
+- Local sanctions lists (per jurisdiction)
+- PEP (Politically Exposed Persons) lists
+
+Screening is performed **before** the transaction is allowed to proceed. A match results in immediate rejection and escalation to the Compliance team.
+
+#### 9.2.4 Corridor Availability
+
+Each corridor has a set of enabled rails. If no rail is available for a corridor, the transaction is rejected with a clear error message.
+
+#### 9.2.5 Intent Verification
+
+The Policy Engine verifies that the AI's extracted intent matches the user's original input. This is done by:
+1. Comparing the extracted fields against the original message.
+2. Flagging any discrepancies (e.g., AI extracted $500 but user said $50).
+3. Escalating ambiguous cases to human review.
+
+### 9.3 Policy Engine Implementation
+
+```typescript
+interface PolicyRule {
+  id: string;
+  name: string;
+  description: string;
+  evaluate(context: PolicyContext): PolicyResult;
+}
+
+interface PolicyContext {
+  intent: PaymentIntent;
+  user: UserProfile;
+  corridor: CorridorConfig;
+  timestamp: Date;
+  recentTransactions: Transaction[];
+}
+
+interface PolicyResult {
+  decision: 'APPROVE' | 'REJECT' | 'ESCALATE';
+  ruleId: string;
+  reason: string;
+  metadata?: Record<string, unknown>;
+}
+
+class PolicyEngine {
+  private rules: PolicyRule[];
+
+  evaluate(context: PolicyContext): PolicyDecision {
+    const results: PolicyResult[] = [];
+
+    for (const rule of this.rules) {
+      const result = rule.evaluate(context);
+      results.push(result);
+
+      // Fail closed: any REJECT stops evaluation
+      if (result.decision === 'REJECT') {
+        return {
+          decision: 'REJECT',
+          results,
+          primaryReason: result.reason,
+        };
+      }
+
+      // ESCALATE: continue evaluation but flag for review
+      if (result.decision === 'ESCALATE') {
+        // Log and continue
+      }
+    }
+
+    // If any ESCALATE, return ESCALATE
+    const escalations = results.filter(r => r.decision === 'ESCALATE');
+    if (escalations.length > 0) {
+      return {
+        decision: 'ESCALATE',
+        results,
+        primaryReason: escalations[0].reason,
+      };
+    }
+
+    return {
+      decision: 'APPROVE',
+      results,
+    };
+  }
+}
+```
+
+### 9.4 Policy Configuration
+
+Policies are stored in a database and can be updated without code deployment. Each policy has:
+- `id`: Unique identifier
+- `name`: Human-readable name
+- `description`: Description of the policy
+- `priority`: Evaluation order (lower = earlier)
+- `enabled`: Boolean
+- `config`: JSON configuration
+- `effective_from`: Start date
+- `effective_to`: End date (optional)
+
+**Policy Changes:** All policy changes are versioned and audited. A change requires approval from two team members (four-eyes principle).
+
+### 9.5 Compliance Orchestrator
+
+The Compliance Orchestrator is a sub-component of the Policy Engine that handles jurisdiction-specific compliance rules.
+
+**Compliance Matrix:**
+
+| Country | KYC Requirement | AML Reporting | Data Residency | FX Controls |
+|---|---|---|---|---|
+| Kenya | National ID + Selfie | SAR to FRC | Yes | Central Bank approval for >$10K |
+| Nigeria | BVN + NIN | SAR to NFIU | Yes | CBN approval for >$10K |
+| Ghana | Ghana Card | SAR to FIC | Yes | BoG approval for >$5K |
+| South Africa | SA ID + Proof of Address | STR to FIC | Yes | SARB approval for >R1M |
+| Tanzania | NIDA ID | SAR to FIU | Yes | BoT approval for >$5K |
+
+The Compliance Orchestrator automatically routes each transaction through the correct compliance ruleset based on the sender's and recipient's jurisdictions.
+
+
+## 10. Module 5: Ledger & Reconciliation Service
+
+### 10.1 Purpose
+
+The Ledger Service is the **single source of truth** for all money movement within Bia. It is a **double-entry, append-only ledger** that records every transaction as a balanced set of debits and credits . Without a proper ledger, a payment platform cannot answer the most basic question: "Where is the money right now?"
+
+### 10.2 Double-Entry Accounting Model
+
+Every transaction creates at least two ledger entries:
+
+| Entry | Account | Debit | Credit |
+|---|---|---|---|
+| 1 | Customer Wallet (Liability) | $100 | |
+| 2 | Settlement Account (Asset) | | $100 |
+
+The sum of all debits must equal the sum of all credits at all times.
+
+### 10.3 Account Types
+
+| Account Type | Description | Normal Balance |
+|---|---|---|
+| **Asset** | Funds held by AetherPay (settlement accounts, stablecoin reserves) | Debit |
+| **Liability** | Funds owed to customers (customer wallets, merchant balances) | Credit |
+| **Revenue** | Fees earned by AetherPay | Credit |
+| **Expense** | Costs incurred by AetherPay (provider fees, FX costs) | Debit |
+| **Equity** | Owner's equity | Credit |
+
+### 10.4 Ledger Schema
+
+```sql
+-- Chart of Accounts
+CREATE TABLE accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('asset', 'liability', 'revenue', 'expense', 'equity')),
+    currency VARCHAR(3) NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Journal Entries (Append-Only)
+CREATE TABLE journal_entries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    transaction_id UUID NOT NULL,
+    entry_number SERIAL,
+    account_id UUID NOT NULL REFERENCES accounts(id),
+    debit_amount NUMERIC(20, 8) DEFAULT 0,
+    credit_amount NUMERIC(20, 8) DEFAULT 0,
+    currency VARCHAR(3) NOT NULL,
+    description TEXT,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    CONSTRAINT debit_credit_check CHECK (
+        (debit_amount > 0 AND credit_amount = 0) OR
+        (credit_amount > 0 AND debit_amount = 0) OR
+        (debit_amount = 0 AND credit_amount = 0)
+    )
+);
+
+-- Transaction Summary (Derived)
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reference VARCHAR(255) UNIQUE NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    amount NUMERIC(20, 8) NOT NULL,
+    currency VARCHAR(3) NOT NULL,
+    fee NUMERIC(20, 8) DEFAULT 0,
+    net_amount NUMERIC(20, 8),
+    sender_id UUID REFERENCES users(id),
+    recipient_id UUID REFERENCES users(id),
+    provider VARCHAR(50),
+    provider_reference VARCHAR(255),
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Idempotency Keys
+CREATE TABLE idempotency_keys (
+    key VARCHAR(255) PRIMARY KEY,
+    request_hash VARCHAR(64) NOT NULL,
+    response_body JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+-- Indexes
+CREATE INDEX idx_journal_entries_transaction ON journal_entries(transaction_id);
+CREATE INDEX idx_journal_entries_account ON journal_entries(account_id);
+CREATE INDEX idx_journal_entries_created ON journal_entries(created_at);
+CREATE INDEX idx_transactions_reference ON transactions(reference);
+CREATE INDEX idx_transactions_status ON transactions(status);
+CREATE INDEX idx_transactions_created ON transactions(created_at);
+```
+
+### 10.5 Ledger Operations
+
+#### 10.5.1 Record Transaction
+
+```typescript
+async function recordTransaction(
+  transaction: TransactionRequest
+): Promise<TransactionResult> {
+  // Start a database transaction
+  return await db.transaction(async (trx) => {
+    // 1. Validate idempotency key
+    const existing = await trx('idempotency_keys')
+      .where({ key: transaction.idempotencyKey })
+      .first();
+
+    if (existing) {
+      return JSON.parse(existing.response_body);
+    }
+
+    // 2. Calculate fee
+    const fee = calculateFee(transaction);
+    const netAmount = transaction.amount - fee;
+
+    // 3. Create transaction record
+    const [txn] = await trx('transactions')
+      .insert({
+        reference: transaction.reference,
+        type: transaction.type,
+        status: 'pending',
+        amount: transaction.amount,
+        currency: transaction.currency,
+        fee,
+        net_amount: netAmount,
+        sender_id: transaction.senderId,
+        recipient_id: transaction.recipientId,
+        provider: transaction.provider,
+        metadata: transaction.metadata,
+      })
+      .returning('*');
+
+    // 4. Create journal entries (double-entry)
+    // Debit: Customer Wallet (Liability decreases)
+    await trx('journal_entries').insert({
+      transaction_id: txn.id,
+      account_id: await getAccountId('customer_wallet', transaction.senderId),
+      debit_amount: transaction.amount,
+      currency: transaction.currency,
+      description: `Payment from ${transaction.senderId}`,
+    });
+
+    // Credit: Settlement Account (Asset increases)
+    await trx('journal_entries').insert({
+      transaction_id: txn.id,
+      account_id: await getAccountId('settlement_account', transaction.currency),
+      credit_amount: transaction.amount,
+      currency: transaction.currency,
+      description: `Settlement for ${txn.reference}`,
+    });
+
+    // Credit: Revenue Account (Fee earned)
+    await trx('journal_entries').insert({
+      transaction_id: txn.id,
+      account_id: await getAccountId('revenue', 'fee'),
+      credit_amount: fee,
+      currency: transaction.currency,
+      description: `Fee for ${txn.reference}`,
+    });
+
+    // Debit: Expense Account (Provider cost)
+    await trx('journal_entries').insert({
+      transaction_id: txn.id,
+      account_id: await getAccountId('expense', 'provider_fee'),
+      debit_amount: fee * 0.6, // Example: 60% of fee is provider cost
+      currency: transaction.currency,
+      description: `Provider cost for ${txn.reference}`,
+    });
+
+    // 5. Store idempotency key
+    await trx('idempotency_keys').insert({
+      key: transaction.idempotencyKey,
+      request_hash: hashRequest(transaction),
+      response_body: JSON.stringify({ id: txn.id, status: 'pending' }),
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    return { id: txn.id, status: 'pending' };
+  });
+}
+```
+
+#### 10.5.2 Get Balance
+
+```sql
+-- Get balance for an account
+SELECT 
+    a.code,
+    a.name,
+    a.type,
+    a.currency,
+    COALESCE(SUM(je.debit_amount), 0) AS total_debits,
+    COALESCE(SUM(je.credit_amount), 0) AS total_credits,
+    CASE 
+        WHEN a.type IN ('asset', 'expense') THEN 
+            COALESCE(SUM(je.debit_amount), 0) - COALESCE(SUM(je.credit_amount), 0)
+        ELSE 
+            COALESCE(SUM(je.credit_amount), 0) - COALESCE(SUM(je.debit_amount), 0)
+    END AS balance
+FROM accounts a
+LEFT JOIN journal_entries je ON je.account_id = a.id
+WHERE a.id = $1
+GROUP BY a.id;
+```
+
+### 10.6 Reconciliation
+
+Reconciliation is the process of verifying that AetherPay's internal ledger matches the external records of payment providers and banks.
+
+**Reconciliation Types:**
+
+| Type | Frequency | Description |
+|---|---|---|
+| **T+0 Streaming** | Real-time | Webhook events are reconciled against ledger entries as they arrive. |
+| **T+1 File-Based** | Daily | Provider settlement files are downloaded and matched against ledger entries. |
+| **T+7 Hash Verification** | Weekly | Cryptographic hashes are exchanged with providers to verify transaction integrity. |
+
+**Break Detection:** Any discrepancy between the ledger and external records is flagged as a "break." Breaks are categorized:
+- **Timing Break:** Transaction is recorded in one system but not the other yet. Resolves automatically.
+- **Amount Break:** Transaction amount differs. Requires investigation.
+- **Missing Transaction:** Transaction exists in one system but not the other. Requires investigation.
+
+**Operator UI:** The Admin Console provides a reconciliation dashboard where operators can view breaks, investigate, and resolve them.
+
+### 10.7 Audit Queries
+
+The ledger supports the following audit queries:
+
+| Query | Description |
+|---|---|
+| **Transaction History** | All journal entries for a specific transaction |
+| **Account Statement** | All journal entries for a specific account over a period |
+| **Trial Balance** | Summary of all accounts with debits and credits |
+| **Balance Sheet** | Assets, liabilities, and equity at a point in time |
+| **Income Statement** | Revenue and expenses over a period |
+| **Audit Trail** | All changes to accounts and journal entries |
+
+
+## 11. Module 6: Stablecoin Settlement & Treasury Service
+
+### 11.1 Purpose
+
+The Stablecoin Settlement Service uses regulated stablecoins (USDC, USDT) as the **cross-border settlement backbone**. Stablecoins provide near-instant, 24/7 settlement, bypassing the slow and expensive correspondent banking system. Stablecoins already account for **43% of all crypto transaction volume in Sub-Saharan Africa** .
+
+### 11.2 Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    FIAT ON-RAMP                                     │
+│  Customer sends fiat (KES, NGN, GHS) via mobile money or bank.     │
+│  Funds are received in a local settlement account.                  │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    STABLECOIN CONVERSION                            │
+│  Fiat is converted to USDC/USDT via a regulated exchange or         │
+│  liquidity provider (e.g., Circle, Binance, OTC desk).             │
+│  Conversion rate and fees are recorded in the ledger.               │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ON-CHAIN TRANSFER                                │
+│  Stablecoins are transferred on-chain (Ethereum, Polygon, Solana,   │
+│  or Aptos) to the destination corridor's treasury wallet.           │
+│  Settlement time: 3–5 seconds.                                      │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    FIAT OFF-RAMP                                    │
+│  Stablecoins are converted back to local currency (GHS, NGN, KES)   │
+│  via a local liquidity provider.                                    │
+│  Funds are sent to the recipient's mobile money wallet or bank      │
+│  account.                                                           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 11.3 Treasury Management
+
+**Treasury Functions:**
+
+| Function | Description |
+|---|---|
+| **Liquidity Monitoring** | Real-time monitoring of stablecoin and fiat balances across all corridors. |
+| **Automated Rebalancing** | Automatically move funds between corridors to maintain target liquidity levels. |
+| **FX Rate Management** | Monitor FX rates and execute conversions at optimal times. |
+| **Prefunding Optimization** | Minimize capital tied up in destination accounts while ensuring sufficient liquidity. |
+| **Yield Generation** | Invest idle stablecoin reserves in tokenized money market funds (e.g., BlackRock BUIDL) to generate yield. |
+
+**Liquidity Targets per Corridor:**
+
+| Corridor | Target Liquidity | Minimum Buffer | Rebalance Threshold |
+|---|---|---|---|
+| Kenya (KES) | $500,000 | $200,000 | $300,000 |
+| Nigeria (NGN) | $1,000,000 | $400,000 | $600,000 |
+| Ghana (GHS) | $300,000 | $100,000 | $200,000 |
+| South Africa (ZAR) | $500,000 | $200,000 | $300,000 |
+
+### 11.4 Stablecoin Networks
+
+| Network | Stablecoin | Settlement Time | Fee | Use Case |
+|---|---|---|---|---|
+| **Ethereum** | USDC, USDT | 12–15 seconds | $1–$5 | Large transactions |
+| **Polygon** | USDC | 2–3 seconds | <$0.01 | High-volume, low-value |
+| **Solana** | USDC | 400ms | <$0.001 | Micropayments |
+| **Aptos** | USDC | <1 second | <$0.01 | Emerging markets |
+
+**Network Selection:** The AI Routing Recommender selects the optimal network based on:
+- Transaction size (large transactions prefer Ethereum for security).
+- Speed requirements (micropayments prefer Solana).
+- Cost sensitivity (high-volume prefer Polygon).
+- Recipient's preferred network.
+
+### 11.5 Key Management
+
+| Key Type | Storage | Signing | Rotation |
+|---|---|---|---|
+| **Hot Wallet** | AWS KMS / HashiCorp Vault | Automated | Every 30 days |
+| **Warm Wallet** | HSM (Hardware Security Module) | Multi-sig (2-of-3) | Every 90 days |
+| **Cold Wallet** | Air-gapped HSM | Multi-sig (3-of-5) | Every 180 days |
+
+**Transaction Signing Flow:**
+1. Transaction is initiated by the Settlement Service.
+2. Transaction details are sent to the HSM for signing.
+3. HSM validates the transaction against policy rules (amount limits, destination whitelist).
+4. HSM signs the transaction and returns the signature.
+5. Signed transaction is broadcast to the network.
+
+### 11.6 Compliance for Stablecoins
+
+Stablecoin transactions are subject to the same AML/KYC requirements as fiat transactions. Additionally:
+
+- **KYT (Know Your Transaction):** Every on-chain transaction is screened using a KYT provider (e.g., Chainalysis, Elliptic) to assess source-of-funds and scam risk.
+- **Sanctions Screening:** Destination addresses are screened against OFAC and other sanctions lists.
+- **Travel Rule:** For transactions above $1,000, originator and beneficiary information is transmitted to the receiving VASP (Virtual Asset Service Provider).
+
+
+## 12. Module 7: Fraud Detection & AML Operations
+
+### 12.1 Purpose
+
+The Fraud Detection & AML Operations module provides real-time transaction screening, anomaly detection, and case management for suspicious activity.
+
+### 12.2 Real-Time Screening
+
+Every transaction is screened **before** execution against:
+
+| Screening Type | Provider | Action on Match |
+|---|---|---|
+| **Sanctions** | OFAC, UN, EU, Local | Reject + Escalate |
+| **PEP** | Dow Jones, Refinitiv | Escalate for review |
+| **Adverse Media** | Dow Jones, Refinitiv | Escalate for review |
+| **Watchlist** | Internal + External | Reject + Escalate |
+
+**Screening API:**
+```typescript
+interface ScreeningRequest {
+  transactionId: string;
+  sender: {
+    name: string;
+    dateOfBirth?: string;
+    nationality?: string;
+    idNumber?: string;
+  };
+  recipient: {
+    name: string;
+    dateOfBirth?: string;
+    nationality?: string;
+    idNumber?: string;
+  };
+  amount: number;
+  currency: string;
+}
+
+interface ScreeningResult {
+  decision: 'CLEAR' | 'REJECT' | 'ESCALATE';
+  matches: ScreeningMatch[];
+  riskScore: number; // 0-100
+  screenedAt: Date;
+}
+```
+
+### 12.3 Anomaly Detection
+
+Machine learning models detect anomalous transaction patterns:
+
+| Model | Description | Features |
+|---|---|---|
+| **Velocity Anomaly** | Detects unusual transaction frequency | Transaction count per hour/day |
+| **Amount Anomaly** | Detects unusual transaction amounts | Z-score against user's historical average |
+| **Geographic Anomaly** | Detects unusual geographic patterns | IP geolocation vs. registered address |
+| **Device Anomaly** | Detects unusual device usage | Device fingerprint, OS, browser |
+| **Behavioral Anomaly** | Detects unusual user behavior | Session duration, navigation patterns |
+
+**Model Training:** Models are trained on historical transaction data and updated weekly. False positives are fed back into the model to improve accuracy.
+
+### 12.4 Case Management
+
+When a transaction is flagged (ESCALATE), it enters the case management workflow:
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  FLAGGED    │───▶│  ASSIGNED   │───▶│  UNDER      │───▶│  RESOLVED   │
+│             │    │             │    │  REVIEW     │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+                                              │
+                                              ▼
+                                       ┌─────────────┐
+                                       │  SAR FILED  │
+                                       │  (if needed)│
+                                       └─────────────┘
+```
+
+**Case Fields:**
+- `case_id`: Unique identifier
+- `transaction_id`: Related transaction
+- `status`: FLAGGED, ASSIGNED, UNDER_REVIEW, RESOLVED, SAR_FILED
+- `priority`: LOW, MEDIUM, HIGH, CRITICAL
+- `assigned_to`: Compliance analyst
+- `created_at`, `updated_at`, `resolved_at`
+- `resolution`: Description of resolution
+- `sar_reference`: SAR filing reference (if applicable)
+
+### 12.5 SAR Filing
+
+Suspicious Activity Reports (SARs) are filed with the relevant Financial Intelligence Unit (FIU) in each jurisdiction:
+
+| Country | FIU | Filing Deadline | Format |
+|---|---|---|---|
+| Kenya | Financial Reporting Centre (FRC) | 24 hours | XML |
+| Nigeria | Nigerian Financial Intelligence Unit (NFIU) | 24 hours | XML |
+| Ghana | Financial Intelligence Centre (FIC) | 24 hours | XML |
+| South Africa | Financial Intelligence Centre (FIC) | 15 days | XML |
+
+**SAR Content:**
+- Subject information (name, ID, address)
+- Transaction details (amount, date, currency)
+- Suspicious activity description
+- Supporting documents
+- Analyst conclusion
+
+
+## 13. Module 8: UI Layer (All Surfaces)
+
+### 13.1 UI Surfaces
+
+AetherPay has **five distinct UI surfaces**, each serving a different user group:
+
+| Surface | Users | Purpose |
+|---|---|---|
+| **Merchant Dashboard** | Business operators | View payments, manage API keys, configure webhooks, see balances |
+| **Developer Portal** | Developers | API documentation, sandbox testing, key management |
+| **Admin/Ops Console** | Operations team | Monitor transactions, resolve stuck payments, manage liquidity |
+| **Partner Portal** | B2B clients | Self-service onboarding, KYC submission, settlement reports |
+| **Embeddable Checkout** | End customers | Payment forms that merchants embed in their websites |
+
+### 13.2 Merchant Dashboard
+
+**Pages:**
+
+| Page | Description |
+|---|---|
+| **Overview** | Summary of recent payments, balance, and key metrics |
+| **Payments** | List of all payments with filters (date, status, amount, method) |
+| **Payment Detail** | Detailed view of a single payment with timeline and receipt |
+| **Balances** | Current balance across all currencies and corridors |
+| **Payouts** | Initiate and manage disbursements |
+| **Customers** | List of customers with payment history |
+| **API Keys** | Manage API keys (create, revoke, rotate) |
+| **Webhooks** | Configure webhook endpoints and view delivery logs |
+| **Settings** | Business profile, team members, security settings |
+| **Reports** | Downloadable reports (CSV, PDF) |
+
+**Key Components:**
+- **Payment Timeline:** Visual timeline showing payment status from initiation to settlement.
+- **Balance Widget:** Real-time balance across all currencies.
+- **Transaction Table:** Sortable, filterable table with pagination.
+- **Chart Components:** Revenue charts, transaction volume charts.
+
+### 13.3 Developer Portal
+
+**Pages:**
+
+| Page | Description |
+|---|---|
+| **Documentation** | API reference, guides, tutorials |
+| **API Reference** | Interactive API explorer with code examples |
+| **Sandbox** | Test environment with mock data |
+| **API Keys** | Manage test and live API keys |
+| **Webhook Testing** | Send test webhooks and view responses |
+| **Status Page** | Real-time status of all payment rails |
+| **Changelog** | API version history and breaking changes |
+| **SDKs** | Downloadable SDKs (TypeScript, Python, Go, Flutter) |
+
+**API Documentation Features:**
+- **Interactive Examples:** Try API calls directly in the browser.
+- **Code Snippets:** Auto-generated code in multiple languages.
+- **Error Reference:** Comprehensive error code documentation.
+- **Postman Collection:** Downloadable Postman collection.
+
+### 13.4 Admin/Ops Console
+
+**Pages:**
+
+| Page | Description |
+|---|---|
+| **Dashboard** | Real-time system health, transaction volume, error rates |
+| **Transactions** | Search, filter, and view all transactions |
+| **Transaction Detail** | Full transaction details including AI reasoning and audit trail |
+| **Liquidity** | Real-time liquidity across all corridors and currencies |
+| **Reconciliation** | View and resolve reconciliation breaks |
+| **Compliance** | View flagged transactions, manage cases, file SARs |
+| **Fraud** | View fraud alerts, manage rules, view model performance |
+| **Providers** | View provider health, manage circuit breakers, view API logs |
+| **Users** | View and manage user accounts |
+| **Settings** | System configuration, feature flags, policy rules |
+
+**Key Features:**
+- **Real-Time Monitoring:** WebSocket-based real-time updates.
+- **Alerting:** Configurable alerts for critical events (provider outage, liquidity low, fraud spike).
+- **Manual Override:** Operators can manually approve, reject, or refund transactions.
+- **Audit Log:** Every operator action is logged for audit.
+
+### 13.5 Partner Portal
+
+**Pages:**
+
+| Page | Description |
+|---|---|
+| **Onboarding** | Self-service KYC/KYB submission |
+| **Dashboard** | Summary of account status, balance, and recent transactions |
+| **Transactions** | View all transactions |
+| **Settlement Reports** | Download settlement reports |
+| **Invoices** | View and pay invoices |
+| **Support** | Submit support tickets, view FAQ |
+| **Settings** | Business profile, team members, API keys |
+
+### 13.6 Embeddable Checkout
+
+A lightweight, embeddable payment form that merchants can drop into their websites.
+
+**Features:**
+- **Responsive Design:** Works on mobile and desktop.
+- **Multiple Payment Methods:** Mobile money, card, bank transfer.
+- **Real-Time Validation:** Validates phone numbers, amounts, etc. in real time.
+- **PCI-DSS Compliant:** Card data is handled securely (SAQ A).
+- **Customizable:** Colors, logo, and branding can be customized.
+
+**Integration Options:**
+
+| Method | Description |
+|---|---|
+| **Drop-in UI** | Pre-built payment form. Merchant adds a `<script>` tag and a `<div>`. |
+| **Elements** | Individual form fields that merchant can compose into a custom form. |
+| **Mobile SDK** | Native SDKs for iOS and Android. |
+
+### 13.7 UI Technology Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | React 18 + TypeScript |
+| **State Management** | Zustand / TanStack Query |
+| **Styling** | Tailwind CSS + Radix UI |
+| **Charts** | Recharts / Visx |
+| **Tables** | TanStack Table |
+| **Forms** | React Hook Form + Zod |
+| **API Client** | Axios + OpenAPI-generated client |
+| **Testing** | Vitest + Playwright |
+| **Build** | Vite |
+| **Deployment** | Vercel / AWS Amplify |
+
+### 13.8 Accessibility
+
+All UI surfaces must meet **WCAG 2.1 AA** standards:
+
+- **Perceivable:** Text alternatives, captions, adaptable content.
+- **Operable:** Keyboard navigation, sufficient time, seizure-safe.
+- **Understandable:** Readable, predictable, input assistance.
+- **Robust:** Compatible with assistive technologies.
+
+**Testing:** Automated accessibility testing with axe-core in CI/CD pipeline.
+
+
+## 14. Module 9: MCP Server for AI Agents
+
+### 14.1 Purpose
+
+The MCP (Model Context Protocol) Server allows AI agents (Claude, ChatGPT, Cursor, etc.) to initiate payments via natural language. This is the **AI-native interface** for AetherPay.
+
+MCP is a protocol that standardizes communication between LLM clients and server-hosted tools . By exposing payment operations as MCP tools, any MCP-compatible AI agent can become a payment terminal.
+
+### 14.2 MCP Tools
+
+| Tool | Description | Parameters |
+|---|---|---|
+| `initiate_payment` | Initiate a payment (collection or disbursement) | `amount`, `currency`, `recipient`, `method` |
+| `check_payment_status` | Check the status of a payment | `payment_id` |
+| `get_balance` | Get the balance of an account | `currency` |
+| `list_transactions` | List recent transactions | `limit`, `offset`, `filters` |
+| `get_exchange_rate` | Get FX rate between two currencies | `from`, `to` |
+| `validate_recipient` | Validate a recipient's phone number | `phone_number`, `provider` |
+| `get_fee_estimate` | Get fee estimate for a payment | `amount`, `currency`, `method` |
+
+### 14.3 MCP Server Implementation
+
+```typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+
+const server = new McpServer({
+  name: 'aetherpay',
+  version: '1.0.0',
+});
+
+// Tool: Initiate Payment
+server.tool(
+  'initiate_payment',
+  {
+    amount: z.number().positive(),
+    currency: z.string().length(3),
+    recipient: z.object({
+      phoneNumber: z.string(),
+      provider: z.enum(['mpesa', 'mtn_momo', 'airtel_money']),
+      country: z.string().length(2),
+    }),
+    description: z.string().optional(),
+  },
+  async ({ amount, currency, recipient, description }) => {
+    // 1. Extract intent (deterministic)
+    const intent = {
+      type: 'disbursement',
+      amount,
+      currency,
+      recipient,
+      description,
+    };
+
+    // 2. Validate via Policy Engine (deterministic)
+    const validation = await policyEngine.evaluate(intent);
+
+    if (validation.decision === 'REJECT') {
+      return {
+        content: [{
+          type: 'text',
+          text: `Payment rejected: ${validation.primaryReason}`,
+        }],
+      };
+    }
+
+    // 3. Get routing recommendation (AI advisory)
+    const recommendation = await routingRecommender.recommend(intent);
+
+    // 4. Validate route (deterministic)
+    const routeValidation = await validateRoute(recommendation);
+
+    if (!routeValidation.valid) {
+      return {
+        content: [{
+          type: 'text',
+          text: `Route validation failed: ${routeValidation.reason}`,
+        }],
+      };
+    }
+
+    // 5. Execute payment
+    const payment = await paymentService.disburse(intent, routeValidation.rail);
+
+    return {
+      content: [{
+        type: 'text',
+        text: `Payment initiated. ID: ${payment.id}. Status: ${payment.status}. Route: ${routeValidation.rail}. Expected settlement: ${payment.expectedSettlement}.`,
+      }],
+    };
+  }
+);
+
+// Tool: Check Payment Status
+server.tool(
+  'check_payment_status',
+  { paymentId: z.string() },
+  async ({ paymentId }) => {
+    const payment = await paymentService.getStatus(paymentId);
+    return {
+      content: [{
+        type: 'text',
+        text: `Payment ${payment.id}: ${payment.status}. Amount: ${payment.amount} ${payment.currency}. Settled: ${payment.settledAt || 'pending'}.`,
+      }],
+    };
+  }
+);
+
+// Tool: Get Balance
+server.tool(
+  'get_balance',
+  { currency: z.string().length(3).optional() },
+  async ({ currency }) => {
+    const balances = await accountService.getBalances(currency);
+    return {
+      content: [{
+        type: 'text',
+        text: `Balances: ${balances.map(b => `${b.amount} ${b.currency}`).join(', ')}`,
+      }],
+    };
+  }
+);
+
+// Start server
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+### 14.4 MCP Client Configuration
+
+Users can connect AetherPay's MCP server to their AI client (e.g., Claude Desktop) by adding the following to their configuration:
+
+```json
+{
+  "mcpServers": {
+    "aetherpay": {
+      "command": "npx",
+      "args": ["-y", "@aetherpay/mcp-server"],
+      "env": {
+        "AETHERPAY_API_KEY": "ap_live_...",
+        "AETHERPAY_ENVIRONMENT": "production"
+      }
+    }
+  }
+}
+```
+
+Once configured, the user can type:
+
+> *"Send KES 5,000 to Mary's M-PESA number +254712345678."*
+
+The AI agent will:
+1. Call the `initiate_payment` tool.
+2. The tool will validate the request via the Policy Engine.
+3. The tool will execute the payment via the appropriate rail.
+4. The AI agent will respond with a confirmation.
+
+### 14.5 Security for MCP
+
+| Concern | Mitigation |
+|---|---|
+| **Prompt Injection** | The MCP server validates all inputs. The Policy Engine rejects any request that does not match the user's stated intent. |
+| **Unauthorized Access** | API key authentication. All MCP requests must include a valid API key. |
+| **Replay Attacks** | Idempotency keys on all payment operations. |
+| **Data Leakage** | The MCP server never exposes raw payment credentials. All sensitive operations are performed server-side. |
+| **Rate Limiting** | MCP requests are subject to the same rate limits as REST API requests. |
+
+
+## 15. Module 10: Developer Experience & SDKs
+
+### 15.1 Purpose
+
+Developer experience is a competitive moat. Stripe won because developers loved it. AetherPay must provide a world-class developer experience to attract B2B clients.
+
+### 15.2 SDKs
+
+| Language | Package | Repository |
+|---|---|---|
+| **TypeScript/Node.js** | `@aetherpay/node` | GitHub |
+| **Python** | `aetherpay-python` | GitHub |
+| **Go** | `github.com/aetherpay/go-sdk` | GitHub |
+| **Flutter/Dart** | `aetherpay_flutter` | GitHub |
+| **PHP** | `aetherpay/php-sdk` | GitHub |
+
+**SDK Features:**
+- Type-safe API clients.
+- Automatic retries with exponential backoff.
+- Webhook signature verification.
+- Idempotency key management.
+- Comprehensive error handling.
+- Full test coverage.
+
+### 15.3 API Documentation
+
+- **OpenAPI 3.1 Specification:** Machine-readable API spec.
+- **Interactive API Explorer:** Try API calls in the browser.
+- **Code Examples:** Auto-generated in multiple languages.
+- **Postman Collection:** Downloadable collection with all endpoints.
+- **Migration Guides:** Guides for migrating from other providers.
+- **Webhook Simulator:** Test webhook handling without real transactions.
+
+### 15.4 Sandbox
+
+The sandbox environment provides:
+- **Mock Data:** Pre-populated test accounts and transactions.
+- **Test API Keys:** Separate keys for sandbox.
+- **Simulated Rails:** Simulate M-PESA, MTN MoMo, and other providers.
+- **Failure Scenarios:** Simulate provider failures, timeouts, and errors.
+- **Webhook Testing:** Send test webhooks to a local endpoint.
+
+### 15.5 Status Page
+
+A public status page (status.aetherpay.io) shows:
+- **Rail Health:** Real-time status of all payment rails.
+- **API Uptime:** Historical uptime for the API.
+- **Incident History:** Past incidents and resolutions.
+- **Scheduled Maintenance:** Upcoming maintenance windows.
+
+### 15.6 Changelog
+
+Every API change is documented in a changelog:
+- **Breaking Changes:** Clearly marked with migration instructions.
+- **New Features:** New endpoints, parameters, and capabilities.
+- **Deprecations:** Deprecated endpoints with sunset dates.
+- **Bug Fixes:** Bug fixes and improvements.
+
+
+## 16. Data Architecture & Database Design
+
+### 16.1 Database Schema Overview
+
+| Database | Purpose | Technology |
+|---|---|---|
+| **Ledger** | Double-entry accounting | PostgreSQL (Citus for sharding) |
+| **Users** | User accounts, KYC data | PostgreSQL |
+| **Transactions** | Transaction records | PostgreSQL |
+| **Policies** | Policy rules, compliance config | PostgreSQL |
+| **Cache** | Sessions, rate limits, hot data | Redis |
+| **Events** | Event streaming | Apache Kafka |
+| **Analytics** | Reporting, analytics | ClickHouse |
+| **Documents** | KYC documents, invoices | S3 / GCS |
+| **Secrets** | API keys, credentials | HashiCorp Vault |
+
+### 16.2 Key Tables
+
+#### Users Table
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone_number VARCHAR(20),
+    full_name VARCHAR(255) NOT NULL,
+    country VARCHAR(2) NOT NULL,
+    kyc_tier VARCHAR(20) NOT NULL DEFAULT 'tier_0',
+    kyc_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    kyc_verified_at TIMESTAMPTZ,
+    password_hash VARCHAR(255),
+    mfa_enabled BOOLEAN DEFAULT false,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### KYC Documents Table
+```sql
+CREATE TABLE kyc_documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    document_type VARCHAR(50) NOT NULL,
+    document_number VARCHAR(255),
+    issuing_country VARCHAR(2),
+    issue_date DATE,
+    expiry_date DATE,
+    file_url VARCHAR(500) NOT NULL,
+    verification_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    verification_provider VARCHAR(50),
+    verification_reference VARCHAR(255),
+    verified_at TIMESTAMPTZ,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### Corridors Table
+```sql
+CREATE TABLE corridors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_country VARCHAR(2) NOT NULL,
+    destination_country VARCHAR(2) NOT NULL,
+    source_currency VARCHAR(3) NOT NULL,
+    destination_currency VARCHAR(3) NOT NULL,
+    enabled BOOLEAN DEFAULT true,
+    min_amount NUMERIC(20, 8) DEFAULT 1,
+    max_amount NUMERIC(20, 8),
+    fee_percentage NUMERIC(5, 4) DEFAULT 0.015,
+    fee_fixed NUMERIC(20, 8) DEFAULT 0,
+    available_rails JSONB NOT NULL DEFAULT '[]',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(source_country, destination_country)
+);
+```
+
+#### Provider Config Table
+```sql
+CREATE TABLE provider_configs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    provider VARCHAR(50) NOT NULL,
+    environment VARCHAR(20) NOT NULL DEFAULT 'sandbox',
+    enabled BOOLEAN DEFAULT true,
+    credentials_encrypted TEXT NOT NULL,
+    rate_limit_per_minute INTEGER DEFAULT 100,
+    timeout_ms INTEGER DEFAULT 30000,
+    retry_count INTEGER DEFAULT 3,
+    circuit_breaker_threshold NUMERIC(5, 4) DEFAULT 0.10,
+    circuit_breaker_window_seconds INTEGER DEFAULT 300,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(provider, environment)
+);
+```
+
+### 16.3 Data Retention
+
+| Data Type | Retention Period | Justification |
+|---|---|---|
+| **Transaction Records** | 7 years | Regulatory requirement |
+| **KYC Documents** | 7 years after account closure | Regulatory requirement |
+| **Audit Logs** | 10 years | Regulatory requirement |
+| **Webhook Logs** | 90 days | Operational |
+| **API Logs** | 30 days | Operational |
+| **Session Data** | 24 hours | Security |
+| **Analytics Data** | 3 years | Business intelligence |
+
+### 16.4 Data Residency
+
+| Region | Data Stored | Compliance |
+|---|---|---|
+| **Kenya** | Kenyan user data | Kenya Data Protection Act |
+| **Nigeria** | Nigerian user data | Nigeria Data Protection Regulation |
+| **Ghana** | Ghanaian user data | Ghana Data Protection Act |
+| **South Africa** | South African user data | POPIA |
+| **EU** | EU user data | GDPR |
+
+Data residency is enforced at the application layer. Each user's data is stored in the database region corresponding to their country.
+
+
+## 17. Security Architecture
+
+### 17.1 Security Principles
+
+- **Zero Trust:** Never trust, always verify. Every request is authenticated and authorized.
+- **Least Privilege:** Users and services have only the permissions they need.
+- **Defense in Depth:** Multiple layers of security controls.
+- **Fail Secure:** If a security control fails, the system defaults to the most secure state.
+
+### 17.2 Encryption
+
+| Layer | Encryption | Algorithm |
+|---|---|---|
+| **In Transit** | TLS 1.3 | AES-256-GCM |
+| **At Rest** | Database encryption | AES-256 |
+| **API Keys** | Hashing | SHA-256 |
+| **PII** | Field-level encryption | AES-256-GCM |
+| **Stablecoin Keys** | HSM | FIPS 140-2 Level 3 |
+
+### 17.3 Authentication & Authorization
+
+| Method | Use Case | Details |
+|---|---|---|
+| **API Keys** | Server-to-server | Prefix `ap_`, hashed with SHA-256 |
+| **OAuth 2.0** | Third-party apps | Client credentials + authorization code |
+| **JWT** | Dashboard sessions | RS256, 15-min expiry, refresh tokens |
+| **MFA** | Dashboard login | TOTP (Google Authenticator, Authy) |
+| **HMAC** | Webhook verification | SHA-256 signature |
+
+### 17.4 PCI-DSS Compliance
+
+AetherPay must comply with **PCI-DSS 4.0** for card payments. Key requirements:
+
+- **Requirement 6.4.3:** Script integrity on payment pages must be explicitly verified and managed. Scripts must be sourced from trusted providers .
+- **Requirement 11.6.1:** Payment form content and header integrity monitoring .
+- **Requirement 3.4:** PAN must be rendered unreadable anywhere it is stored.
+- **Requirement 4.1:** Strong cryptography for transmission of cardholder data over open networks.
+
+**Compliance Level:** AetherPay will be a **Level 1** service provider (6+ million transactions annually) .
+
+### 17.5 Penetration Testing
+
+- **Frequency:** Quarterly external penetration tests.
+- **Scope:** API, dashboard, checkout, MCP server.
+- **Provider:** Third-party security firm.
+- **Remediation:** Critical findings fixed within 7 days, high within 30 days.
+
+### 17.6 Incident Response
+
+| Phase | Activity |
+|---|---|
+| **Detection** | Monitoring, alerting, anomaly detection |
+| **Containment** | Isolate affected systems, revoke compromised credentials |
+| **Eradication** | Remove threat, patch vulnerabilities |
+| **Recovery** | Restore services, verify integrity |
+| **Post-Incident** | Root cause analysis, lessons learned, process improvements |
+
+**Incident Response Team:** CISO, CTO, Head of Compliance, Head of Engineering, Legal Counsel.
+
+
+## 18. Infrastructure & DevOps
+
+### 18.1 Cloud Infrastructure
+
+| Component | Service | Region |
+|---|---|---|
+| **Compute** | AWS EKS (Kubernetes) | af-south-1 (Cape Town), eu-west-1 (Ireland) |
+| **Database** | AWS RDS PostgreSQL (Multi-AZ) | Same as compute |
+| **Cache** | AWS ElastiCache Redis (Cluster) | Same as compute |
+| **Streaming** | AWS MSK (Kafka) | Same as compute |
+| **Object Storage** | AWS S3 | Same as compute |
+| **CDN** | CloudFront | Global |
+| **DNS** | Route 53 | Global |
+| **Secrets** | HashiCorp Vault (self-managed) | Same as compute |
+
+### 18.2 CI/CD Pipeline
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  COMMIT     │───▶│  BUILD      │───▶│  TEST       │───▶│  DEPLOY     │
+│             │    │             │    │             │    │             │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+                                              │
+                                              ▼
+                                       ┌─────────────┐
+                                       │  MONITOR    │
+                                       │             │
+                                       └─────────────┘
+```
+
+**Stages:**
+1. **Commit:** Developer pushes to GitHub.
+2. **Build:** Docker image built and pushed to ECR.
+3. **Test:** Unit tests, integration tests, security scans, accessibility tests.
+4. **Deploy:** ArgoCD syncs to Kubernetes (blue-green deployment).
+5. **Monitor:** Prometheus, Grafana, Datadog monitoring.
+
+### 18.3 Environments
+
+| Environment | Purpose | URL |
+|---|---|---|
+| **Development** | Local development | localhost |
+| **Staging** | Integration testing | staging-api.aetherpay.io |
+| **Sandbox** | Customer testing | sandbox-api.aetherpay.io |
+| **Production** | Live traffic | api.aetherpay.io |
+
+### 18.4 Monitoring & Alerting
+
+| Metric | Threshold | Alert |
+|---|---|---|
+| **API Latency (p99)** | > 2 seconds | PagerDuty |
+| **API Error Rate** | > 1% | PagerDuty |
+| **Payment Failure Rate** | > 5% | PagerDuty |
+| **Provider Outage** | Circuit breaker open | Slack + PagerDuty |
+| **Liquidity Low** | < Minimum buffer | Slack |
+| **Fraud Spike** | > 2x baseline | Slack + Email |
+| **Database CPU** | > 80% | Slack |
+
+### 18.5 Backup & Disaster Recovery
+
+| Component | Backup Frequency | Retention | RTO | RPO |
+|---|---|---|---|---|
+| **PostgreSQL** | Continuous (WAL) + Daily snapshot | 30 days | 1 hour | 5 minutes |
+| **Redis** | Daily snapshot | 7 days | 15 minutes | 1 hour |
+| **S3** | Cross-region replication | Indefinite | 0 | 0 |
+| **Kafka** | 7-day retention | 7 days | 1 hour | 5 minutes |
+
+**Disaster Recovery Plan:**
+1. **Detection:** Monitoring alerts on primary region failure.
+2. **Failover:** DNS switch to secondary region.
+3. **Recovery:** Restore databases from backups, restart services.
+4. **Validation:** Run smoke tests, verify data integrity.
+5. **Communication:** Notify customers via status page and email.
+
+
+## 19. Regulatory & Licensing Strategy
+
+### 19.1 Approach
+
+AetherPay will **partner and embed, not license everywhere**. The strategy is to launch in one corridor with a licensed partner, prove the model, and expand.
+
+### 19.2 Phase 1: Partner-Led (Months 0–6)
+
+- **Corridor:** Kenya–Nigeria.
+- **Partner:** A licensed PSP or bank in each country.
+- **Partner provides:** Regulatory license, settlement accounts, compliance oversight.
+- **AetherPay provides:** Technology, AI routing, compliance orchestration.
+
+### 19.3 Phase 2: License Passporting (Months 6–18)
+
+- **Leverage:** PAPSS (Pan-African Payment and Settlement System) to connect with central banks and commercial banks across the continent .
+- **Kenya–Rwanda MOU:** The Central Bank of Kenya and National Bank of Rwanda signed an MOU on a Payment Service Passporting Framework in 2026 . This framework can significantly reduce regulatory duplication and barriers to entry for PSPs operating across the region.
+- **Expand:** To 3–5 corridors (add Ghana–South Africa, Kenya–Uganda).
+
+### 19.4 Phase 3: Direct Licensing (Months 18–36)
+
+- **Key Markets:** Kenya, Nigeria, South Africa, Ghana.
+- **Requirements:**
+
+| Country | License Type | Minimum Capital | Timeline |
+|---|---|---|---|
+| Kenya | Payment Service Provider (PSP) | ~$35,000 | 12–18 months  |
+| Nigeria | Payment Solution Service Provider (PSSP) | N2 billion (~$1.3M) | 18–24 months |
+| South Africa | Payment System Operator | ~$550,000 | 24–36 months  |
+| Ghana | Payment Service Provider | GHS 1M (~$80,000) | 12–18 months |
+
+### 19.5 Stablecoin Regulation
+
+| Country | Regulatory Status | Key Requirements |
+|---|---|---|
+| **Kenya** | VASP Act (Nov 2025). Stablecoin issuers need KSh 300M (~$2.3M) minimum capital . |
+| **Nigeria** | ISA 2025. Crypto firms can enter SEC's Accelerated Regulatory Incubation Programme . |
+| **South Africa** | FSCA has approved 310 crypto service provider licenses out of 533 applications . |
+| **Tanzania** | First stablecoin sandbox launched in 2026 . |
+| **EAC** | Master plan to integrate regulated stablecoins into shared infrastructure by 2031 . |
+
+### 19.6 AML/KYC Compliance
+
+| Requirement | Implementation |
+|---|---|
+| **Customer Due Diligence (CDD)** | Verify identity at onboarding |
+| **Enhanced Due Diligence (EDD)** | For high-risk customers and transactions > $10,000 |
+| **Transaction Monitoring** | Real-time screening against sanctions, PEP, adverse media |
+| **Suspicious Activity Reporting (SAR)** | File with FIU within 24 hours |
+| **Record Keeping** | 7 years for all transaction and KYC records |
+| **Independent Audit** | Annual AML audit by third-party firm |
+
+**FinCEN MSB Registration:** AetherPay will register as a Money Services Business (MSB) with FinCEN if operating in the US or serving US customers .
+
+
+## 20. Non-Functional Requirements
+
+### 20.1 Performance
+
+| Metric | Target | Maximum |
+|---|---|---|
+| **API Latency (p50)** | < 100ms | 200ms |
+| **API Latency (p99)** | < 500ms | 1s |
+| **Payment Initiation** | < 2s | 5s |
+| **Payment Settlement** | < 5 minutes | 30 minutes |
+| **Dashboard Load** | < 2s | 5s |
+| **Webhook Delivery** | < 5s | 30s |
+
+### 20.2 Scalability
+
+| Metric | Target | Maximum |
+|---|---|---|
+| **Transactions per Second (TPS)** | 1,000 | 10,000 |
+| **Concurrent Users** | 10,000 | 100,000 |
+| **API Requests per Day** | 10 million | 100 million |
+| **Database Size** | 1 TB | 100 TB |
+| **Kafka Topics** | 50 | 500 |
+
+### 20.3 Availability
+
+| Metric | Target | Maximum Downtime |
+|---|---|---|
+| **API Uptime** | 99.95% | 4.38 hours/year |
+| **Dashboard Uptime** | 99.9% | 8.76 hours/year |
+| **Payment Rails** | 99.5% | 43.8 hours/year |
+| **Database Uptime** | 99.99% | 52.56 minutes/year |
+
+### 20.4 Reliability
+
+| Metric | Target |
+|---|---|
+| **Payment Success Rate** | > 98% |
+| **Webhook Delivery Rate** | > 99.9% |
+| **Data Durability** | 99.999999999% (11 nines) |
+| **Recovery Time Objective (RTO)** | < 1 hour |
+| **Recovery Point Objective (RPO)** | < 5 minutes |
+
+### 20.5 Compliance
+
+| Standard | Requirement |
+|---|---|
+| **PCI-DSS 4.0** | Level 1 compliance |
+| **SOC 2 Type II** | Annual audit |
+| **ISO 27001** | Information security management |
+| **GDPR** | Data protection for EU users |
+| **NDPR** | Nigeria Data Protection Regulation |
+| **Kenya DPA** | Kenya Data Protection Act |
+| **POPIA** | South Africa data protection |
+
+
+## 21. Operational Runbook
+
+### 21.1 Rail Outage Response
+
+| Step | Action | Owner |
+|---|---|---|
+| 1 | Detect: Circuit breaker opens, alert fires | Monitoring |
+| 2 | Acknowledge: On-call engineer acknowledges alert | On-call |
+| 3 | Assess: Check provider status page, API logs | On-call |
+| 4 | Mitigate: AI routing automatically routes to backup rail | System |
+| 5 | Communicate: Update status page, notify affected customers | Ops |
+| 6 | Resolve: Provider restores service, circuit breaker closes | Provider |
+| 7 | Post-Mortem: Document incident, update runbook | Ops |
+
+### 21.2 Stuck Transaction Resolution
+
+| Step | Action | Owner |
+|---|---|---|
+| 1 | Detect: Transaction stuck in `pending` > 30 minutes | Monitoring |
+| 2 | Investigate: Check provider status, ledger entries | Ops |
+| 3 | Resolve: Manual override, refund, or reversal | Ops |
+| 4 | Communicate: Notify customer of resolution | Support |
+
+### 21.3 Liquidity Crunch Escalation
+
+| Step | Action | Owner |
+|---|---|---|
+| 1 | Detect: Liquidity below minimum buffer | Monitoring |
+| 2 | Alert: Notify Treasury team | Slack |
+| 3 | Assess: Determine cause (high volume, provider delay) | Treasury |
+| 4 | Rebalance: Move funds from other corridors | Treasury |
+| 5 | Communicate: Notify affected customers if delays expected | Ops |
+
+### 21.4 Fraud Incident Response
+
+| Step | Action | Owner |
+|---|---|---|
+| 1 | Detect: Fraud alert fires | Monitoring |
+| 2 | Assess: Review transaction, customer profile | Compliance |
+| 3 | Freeze: Freeze account if fraud confirmed | Compliance |
+| 4 | Investigate: Gather evidence, file SAR if needed | Compliance |
+| 5 | Resolve: Refund affected customers, update rules | Compliance |
+
+### 21.5 Regulatory Inquiry Handling
+
+| Step | Action | Owner |
+|---|---|---|
+| 1 | Receive: Regulatory inquiry received | Legal |
+| 2 | Acknowledge: Respond within 24 hours | Legal |
+| 3 | Gather: Collect required documents and data | Compliance |
+| 4 | Review: Legal review of response | Legal |
+| 5 | Submit: Submit response by deadline | Legal |
+
+
+## 22. Roadmap & Milestones
+
+### Phase 0: Foundation (Months 0–3)
+
+| Milestone | Deliverable | Team |
+|---|---|---|
+| **Ledger Service** | Double-entry ledger, reconciliation | Backend |
+| **Policy Engine** | Deterministic rules, compliance orchestration | Backend |
+| **Core API** | Unified API gateway, 3 provider adapters | Backend |
+| **Admin Console MVP** | Transaction monitoring, manual override | Frontend |
+| **Sandbox** | Test environment with mock data | DevOps |
+
+### Phase 1: Single Corridor (Months 3–6)
+
+| Milestone | Deliverable | Team |
+|---|---|---|
+| **Production Rails** | M-PESA, PawaPay, stablecoin settlement | Backend |
+| **Merchant Dashboard** | Full dashboard with payments, balances, API keys | Frontend |
+| **Embeddable Checkout** | Drop-in payment form | Frontend |
+| **Webhooks** | Real-time notifications | Backend |
+| **First 5 B2B Clients** | Onboarded and processing payments | Sales |
+
+### Phase 2: AI Layer (Months 6–9)
+
+| Milestone | Deliverable | Team |
+|---|---|---|
+| **AI Intent Extraction** | Nemotron-powered intent parsing | AI/ML |
+| **AI Routing Recommender** | Real-time route optimization | AI/ML |
+| **MCP Server** | AI agent payment interface | AI/ML |
+| **Audit Trail** | Immutable log of all AI decisions | Backend |
+| **Two-Call Architecture** | Intent extraction + verification | AI/ML |
+
+### Phase 3: Expansion (Months 9–18)
+
+| Milestone | Deliverable | Team |
+|---|---|---|
+| **3–5 Corridors** | Kenya–Nigeria, Ghana–SA, Kenya–Uganda | Backend |
+| **Stablecoin Settlement** | USDC/USDT on multiple networks | Backend |
+| **Treasury Automation** | Automated rebalancing, FX management | Treasury |
+| **Fraud/AML Operations** | Real-time screening, case management | Compliance |
+| **Partner Portal** | Self-service onboarding | Frontend |
+
+### Phase 4: Scale (Months 18–36)
+
+| Milestone | Deliverable | Team |
+|---|---|---|
+| **10+ Corridors** | Pan-African coverage | Backend |
+| **Direct Licensing** | Kenya, Nigeria, South Africa, Ghana | Legal |
+| **Institutional Compliance** | SOC 2, ISO 27001, PCI-DSS Level 1 | Compliance |
+| **Public API GA** | General availability | Product |
+| **Series A Fundraise** | $15–25M | Leadership |
+
+
+## 23. Team Structure & Roles
+
+### 23.1 Core Team (Phase 0–1)
+
+| Role | Count | Responsibilities |
+|---|---|---|
+| **CTO** | 1 | Technical vision, architecture, hiring |
+| **Backend Engineers** | 4 | API, ledger, policy engine, adapters |
+| **Frontend Engineers** | 2 | Dashboard, checkout, admin console |
+| **AI/ML Engineer** | 1 | Intent extraction, routing recommender |
+| **DevOps Engineer** | 1 | Infrastructure, CI/CD, monitoring |
+| **Compliance Lead** | 1 | Regulatory strategy, AML/KYC |
+| **Product Manager** | 1 | Roadmap, requirements, stakeholder management |
+| **Designer** | 1 | UI/UX design for all surfaces |
+
+### 23.2 Expanded Team (Phase 2–3)
+
+| Role | Count | Responsibilities |
+|---|---|---|
+| **Head of Treasury** | 1 | Liquidity management, FX, stablecoin reserves |
+| **Head of Compliance** | 1 | AML operations, SAR filing, regulatory liaison |
+| **Compliance Analysts** | 3 | Transaction review, case management |
+| **Partnerships Lead** | 1 | Provider partnerships, bank relationships |
+| **Sales Engineers** | 2 | Technical sales, integration support |
+| **Customer Success** | 2 | Onboarding, support, retention |
+| **Data Engineer** | 1 | Analytics pipeline, reporting |
+| **Security Engineer** | 1 | Penetration testing, security audits |
+
+### 23.3 Advisory Board
+
+| Role | Expertise |
+|---|---|
+| **Regulatory Advisor** | Former central bank official |
+| **Payments Advisor** | Former executive at M-PESA, Flutterwave, or Stripe |
+| **Stablecoin Advisor** | Expert in stablecoin regulation and treasury |
+| **AI Advisor** | Expert in agentic AI and payment systems |
+
+
+## 24. KPIs & Success Metrics
+
+### 24.1 Product KPIs
+
+| Metric | Target (Phase 1) | Target (Phase 3) |
+|---|---|---|
+| **API Uptime** | 99.9% | 99.95% |
+| **Payment Success Rate** | 95% | 98% |
+| **Average Settlement Time** | < 30 min | < 5 min |
+| **API Latency (p99)** | < 1s | < 500ms |
+| **B2B Clients** | 5 | 100 |
+| **Monthly Transaction Volume** | $1M | $100M |
+
+### 24.2 Business KPIs
+
+| Metric | Target (Year 1) | Target (Year 3) |
+|---|---|---|
+| **Revenue** | $500K | $20M |
+| **Gross Margin** | 40% | 60% |
+| **Customer Acquisition Cost (CAC)** | $5,000 | $2,000 |
+| **Lifetime Value (LTV)** | $50,000 | $200,000 |
+| **LTV:CAC Ratio** | 10:1 | 100:1 |
+| **Monthly Active Merchants** | 10 | 500 |
+
+### 24.3 Compliance KPIs
+
+| Metric | Target |
+|---|---|
+| **SAR Filing Accuracy** | 100% |
+| **False Positive Rate** | < 5% |
+| **KYC Verification Time** | < 24 hours |
+| **Regulatory Audit Findings** | 0 critical |
+| **Data Breach Incidents** | 0 |
+
+### 24.4 AI KPIs
+
+| Metric | Target |
+|---|---|
+| **Intent Extraction Accuracy** | > 98% |
+| **Intent Verification Accuracy** | > 99% |
+| **Routing Recommendation Accuracy** | > 95% |
+| **AI Latency (p99)** | < 500ms |
+| **Hallucination Rate** | < 0.1% |
+
+
+## 25. Appendices
+
+### Appendix A: Glossary
+
+| Term | Definition |
+|---|---|
+| **AetherPay** | The pan-African payment interoperability platform |
+| **AI Intent Layer** | The LLM-powered system that extracts structured payment intent from natural language |
+| **Deterministic Policy Engine** | The rule-based system that validates every transaction before execution |
+| **MCP** | Model Context Protocol — a standard for AI agent tool communication |
+| **PAPSS** | Pan-African Payment and Settlement System |
+| **PSP** | Payment Service Provider |
+| **KYT** | Know Your Transaction |
+| **SAR** | Suspicious Activity Report |
+| **HSM** | Hardware Security Module |
+| **MPC** | Multi-Party Computation |
+
+### Appendix B: Provider API References
+
+| Provider | Documentation URL |
+|---|---|
+| M-PESA Daraja | https://developer.safaricom.co.ke |
+| MTN MoMo | https://momodeveloper.mtn.com |
+| PawaPay | https://docs.pawapay.io |
+| Paystack | https://paystack.com/docs |
+| Flutterwave | https://developer.flutterwave.com |
+
+### Appendix C: Regulatory References
+
+| Regulation | Jurisdiction | URL |
+|---|---|---|
+| Kenya VASP Act 2025 | Kenya | https://www.cbk.go.ke |
+| Nigeria ISA 2025 | Nigeria | https://sec.gov.ng |
+| South Africa FSCA | South Africa | https://www.fsca.co.za |
+| Ghana Payment Systems Act | Ghana | https://www.bog.gov.gh |
+| FATF Recommendations | Global | https://www.fatf-gafi.org |
+
+### Appendix D: Emergency Contacts
+
+| Role | Contact | Escalation |
+|---|---|---|
+| **On-Call Engineer** | PagerDuty | Immediate |
+| **CTO** | Phone + Email | 15 minutes |
+| **Compliance Lead** | Phone + Email | 30 minutes |
+| **Legal Counsel** | Phone + Email | 1 hour |
+| **PR/Communications** | Phone + Email | 1 hour |
+
+---
+
+**End of Document**
+
+This PRD is a living document. It will be updated as the product evolves, new providers are integrated, and regulatory requirements change. All changes must be reviewed and approved by the CTO and Product Manager.
