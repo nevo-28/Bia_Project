@@ -108,7 +108,7 @@ The platform includes 6 dedicated, production-ready surfaces styled with Stripe-
 
 ```bash
 # Clone the repository
-git clone 
+git clone https://github.com/nevo-28/Bia_Project/tree/main
 cd bia
 
 # Install dependencies
